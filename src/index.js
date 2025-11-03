@@ -1,5 +1,65 @@
 const ts = require("typescript");
 
+// Helper function to clone a type node to remove parent references
+function cloneTypeNode(node) {
+  if (!node) return node;
+  
+  if (ts.isUnionTypeNode(node)) {
+    return ts.factory.createUnionTypeNode(node.types.map(cloneTypeNode));
+  }
+  
+  if (ts.isIntersectionTypeNode(node)) {
+    return ts.factory.createIntersectionTypeNode(node.types.map(cloneTypeNode));
+  }
+  
+  if (ts.isLiteralTypeNode(node)) {
+    if (ts.isNumericLiteral(node.literal)) {
+      return ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral(node.literal.text));
+    }
+    if (ts.isStringLiteral(node.literal)) {
+      return ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(node.literal.text));
+    }
+    if (ts.isBooleanLiteral(node.literal)) {
+      return ts.factory.createLiteralTypeNode(node.literal.kind === ts.SyntaxKind.TrueKeyword 
+        ? ts.factory.createTrue()
+        : ts.factory.createFalse());
+    }
+    return ts.factory.createLiteralTypeNode(node.literal);
+  }
+  
+  if (ts.isTypeReferenceNode(node)) {
+    return ts.factory.createTypeReferenceNode(
+      node.typeName,
+      node.typeArguments ? node.typeArguments.map(cloneTypeNode) : undefined
+    );
+  }
+  
+  if (ts.isKeywordTypeNode(node)) {
+    return ts.factory.createKeywordTypeNode(node.kind);
+  }
+  
+  if (ts.isArrayTypeNode(node)) {
+    return ts.factory.createArrayTypeNode(cloneTypeNode(node.elementType));
+  }
+  
+  if (ts.isTypeLiteralNode(node)) {
+    return ts.factory.createTypeLiteralNode(node.members.map((member) => {
+      if (ts.isPropertySignature(member)) {
+        return ts.factory.createPropertySignature(
+          member.modifiers,
+          member.name,
+          member.questionToken,
+          cloneTypeNode(member.type)
+        );
+      }
+      return member;
+    }));
+  }
+  
+  // Fallback: try to visit and clone recursively
+  return ts.visitEachChild(node, cloneTypeNode, null);
+}
+
 // Helper function to parse a type string into a TypeScript type node
 function parseTypeString(typeString) {
   try {
@@ -13,7 +73,8 @@ function parseTypeString(typeString) {
     );
     const typeNode = typeFile.statements[0];
     if (ts.isTypeAliasDeclaration(typeNode) && typeNode.type) {
-      return typeNode.type;
+      // Clone the type node to remove parent references
+      return cloneTypeNode(typeNode.type);
     }
   } catch (e) {
     // Fallback to type reference if parsing fails

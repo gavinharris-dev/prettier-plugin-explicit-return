@@ -29,6 +29,30 @@ describe("Integration tests", () => {
     expect(voidCount).toBe(1);
   });
 
+
+
+  it("should detect multiple return types", async () => {
+    const input = `function sum(a: string) {
+  if (a == "number") {
+    return 1;
+  }
+    return "string";
+}`;
+
+    const result = await formatWithPlugin(input);
+    // Should contain a union type annotation: TypeScript infers literal types as "1 | \"string\""
+    expect(result).toMatch(/:\s*1\s*\|\s*"string"/);
+  });
+
+  it("should add void as a return type", async () => {
+    const input = `function test() {
+  console.log("test");
+}`;
+    const result = await formatWithPlugin(input);
+    const voidCount = (result.match(/: void/g) || []).length;
+    expect(voidCount).toBe(1);
+  });
+
   it("should add return type to ArrowFunction without return type", async () => {
     const input = `const multiply = (a: number, b: number) => {
   return a * b;
