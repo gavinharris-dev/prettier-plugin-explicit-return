@@ -1,0 +1,14 @@
+node_modules
+test
+.gitignore
+*.test.js
+*.test.ts
+.eslintrc*
+.prettierrc*
+tsconfig.json
+.vscode
+.idea
+*.log
+*.swp
+*.swo
+.DS_Store

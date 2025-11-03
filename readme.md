@@ -161,5 +161,4 @@ The plugin uses TypeScript's type checker to infer return types for functions th
 
 ## License
 
-ISC
-
+[MIT](./LICENSE) © 2025 Gavin Harris
