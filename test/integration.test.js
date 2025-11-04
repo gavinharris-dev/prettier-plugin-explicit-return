@@ -30,6 +30,18 @@ describe("Integration tests", () => {
   });
 
 
+  it("should detect multiple return types (async)", async () => {
+    const input = `async function sum(a: string) {
+  if (a == "number") {
+    return 1;
+  }
+    return "string";
+}`;
+
+    const result = await formatWithPlugin(input);
+    // Should contain a union type annotation: TypeScript infers literal types as "1 | \"string\""
+    expect(result).toContain("async function sum(a: string): Promise<1 | \"string\">")
+  });
 
   it("should detect multiple return types", async () => {
     const input = `function sum(a: string) {

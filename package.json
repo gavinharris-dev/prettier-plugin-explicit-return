@@ -1,6 +1,6 @@
 {
   "name": "prettier-plugin-explicit-return",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Prettier plugin that automatically adds explicit return type annotations to TypeScript functions using type inference",
   "main": "src/index.js",
   "files": [
