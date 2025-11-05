@@ -49,7 +49,7 @@ describe("Integration tests", () => {
     return 1;
   }
     return "string";
-}`;
+}`;   
 
     const result = await formatWithPlugin(input);
     // Should contain a union type annotation: TypeScript infers literal types as "1 | \"string\""
@@ -63,6 +63,40 @@ describe("Integration tests", () => {
     const result = await formatWithPlugin(input);
     const voidCount = (result.match(/: void/g) || []).length;
     expect(voidCount).toBe(1);
+  });
+
+  it("Should set the return type to be a function", async () => {
+    const input = `function test() {
+  return function() {
+    return "test";
+  };
+}`;
+    const result = await formatWithPlugin(input);
+    expect(result).toContain(": () => string");
+  });
+
+  it("Should set the return type to be a function that returns a function that returns a string", async () => {
+    const input = `function test() {
+  return function() {
+    return function() { return "test"; };
+  };
+}`;
+    const result = await formatWithPlugin(input);
+    expect(result).toContain(": () => () => string");
+  });
+
+  it("Should return a complex object", async () => {
+    const input = `function test() {
+  return [{
+    name: "test",
+    age: 10,
+  }, {
+    name: "test22",
+    age: 12,
+  }];
+}`;
+    const result = await formatWithPlugin(input);
+    expect(result).toContain(": { name: string; age: number }[]");
   });
 
   it("should add return type to ArrowFunction without return type", async () => {

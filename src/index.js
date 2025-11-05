@@ -174,7 +174,7 @@ function inferAndAnnotateReturnTypes(sourceText) {
   const options = {
     target: ts.ScriptTarget.Latest,
     module: ts.ModuleKind.ESNext,
-    moduleResolution: ts.ModuleResolutionKind.NodeJs,
+    moduleResolution: ts.ModuleResolutionKind.NodeNext,
     skipLibCheck: true,
     lib: ["ES2022", "DOM"],
   };

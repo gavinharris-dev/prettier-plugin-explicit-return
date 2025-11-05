@@ -18,6 +18,12 @@ async function fetchData(url: string) { // Expect : Promise<Response> as return 
   return fetch(url);
 }
 
+function testCurriedFunction() {
+  return function() {
+    return () => "test";
+  }
+}
+
 // Class with method
 class Calculator {
   add(a: number, b: number) { // Expect : number as return type

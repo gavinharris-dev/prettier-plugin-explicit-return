@@ -8,7 +8,9 @@
     "README.md"
   ],
   "scripts": {
-    "test": "vitest run test/integration.test.js",
+    "test": "vitest test/integration.test.js",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest test/integration.test.js",
     "test:manual": "node test/manual-test.js"
   },
   "keywords": [
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@vitest/ui": "^4.0.6",
     "prettier": "^3.6.2",
     "vitest": "^4.0.6"
   },
